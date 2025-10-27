@@ -19,7 +19,7 @@ object ServerActor:
       ctx.log.info("Server registrato nel Receptionist")
 
       Behaviors.withTimers { timers =>
-        timers.startTimerAtFixedRate(Tick(manager.getWorld), 30.millisecond)
+        timers.startTimerAtFixedRate(Tick(manager.getWorld), 3.seconds)
         running(manager, Set.empty)
       }
     }
@@ -29,7 +29,11 @@ object ServerActor:
       msg match
         case RegisterClient(client) =>
           ctx.log.info(s"Client registrato: $client")
-          running(manager, clients + client)
+          val newClients = clients + client
+          //todo modifica il mondo aggiungendo il player
+          newClients.foreach(_ ! UpdateClient(manager.getWorld))
+          running(manager, newClients)
+
 
         case tick: Tick =>
           clients.foreach(_ ! UpdateClient(tick.world))
@@ -43,10 +47,6 @@ object ServerActor:
 
     }
 
-
-class ServerActor {
-
-}
 
 
 

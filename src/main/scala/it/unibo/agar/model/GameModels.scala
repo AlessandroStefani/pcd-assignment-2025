@@ -1,5 +1,7 @@
 package it.unibo.agar.model
 
+import scala.util.Random
+
 sealed trait Entity:
 
   def id: String
@@ -38,6 +40,9 @@ case class World(
 
   def removePlayers(ids: Seq[Player]): World =
     copy(players = players.filterNot(p => ids.map(_.id).contains(p.id)))
+    
+  def addPlayer(id: String): World =
+    copy(players = players :+ Player(id, Random.nextInt(width), Random.nextInt(height), 120.0))
 
   def removeFoods(ids: Seq[Food]): World =
     copy(foods = foods.filterNot(f => ids.contains(f)))

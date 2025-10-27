@@ -16,6 +16,9 @@ class MockGameStateManager(
   // Move a player in a given direction (dx, dy)
   def movePlayerDirection(id: String, dx: Double, dy: Double): Unit =
     directions = directions.updated(id, (dx, dy))
+    
+  def addNewPlayer(id: String): Unit =
+    world = world.addPlayer(id)
 
   def tick(): Unit =
     directions.foreach:

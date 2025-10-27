@@ -24,7 +24,7 @@ object Main extends SimpleSwingApplication:
   private val foods = GameInitializer.initialFoods(numFoods, width, height)
   private val worldManager = new MockGameStateManager(World(width, height, players, foods))
 
-  private val system = ActorSystem(ServerActor(worldManager), "agario", ConfigFactory.load("agario.conf"))
+  private val system = ActorSystem(ServerActor(worldManager), "ClusterSystem", ConfigFactory.load("server.conf"))
 
 //  private val timer = new Timer()
 //  private val task: TimerTask = new TimerTask:
@@ -38,7 +38,7 @@ object Main extends SimpleSwingApplication:
     // Open both views at startup
     new GlobalView(worldManager).open()
 //    players.foreach(p => new LocalView(worldManager, p.id).open())
-//    new LocalView(manager, "p1").open()
-//    new LocalView(manager, "p2").open()
+//    new LocalView(worldManager, "p1").open()
+//    new LocalView(worldManager, "p2").open()
     // No launcher window, just return an empty frame (or null if allowed)
     new Frame { visible = false }
