@@ -1,4 +1,19 @@
 package it.unibo.agar
 
-/** Tag interface for all messages sends by actors */
-trait Message
+import akka.actor.typed.ActorRef
+import it.unibo.agar.model.World
+
+object Message:
+  /** Tag interface for all messages sends by actors */
+  trait Message
+  
+  // Messaggini per il server
+  trait ServerCommand extends Message
+  final case class RegisterClient(client: ActorRef[ClientCommand]) extends ServerCommand
+  final case class UpdatePlayerDirection(id: String, dx: Double, dy: Double) extends ServerCommand
+  final case class Tick(world: World) extends ServerCommand
+
+
+  // Messaggini verso il client
+  trait ClientCommand extends Message
+  final case class UpdateClient(world: World) extends ClientCommand

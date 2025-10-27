@@ -1,6 +1,7 @@
 package it.unibo.agar.controller
 
-import it.unibo.agar.model.AIMovement
+import akka.actor.typed.ActorSystem
+import com.typesafe.config.ConfigFactory
 import it.unibo.agar.model.GameInitializer
 import it.unibo.agar.model.MockGameStateManager
 import it.unibo.agar.model.World
@@ -21,20 +22,23 @@ object Main extends SimpleSwingApplication:
   private val numFoods = 100
   private val players = GameInitializer.initialPlayers(numPlayers, width, height)
   private val foods = GameInitializer.initialFoods(numFoods, width, height)
-  private val manager = new MockGameStateManager(World(width, height, players, foods))
+  private val worldManager = new MockGameStateManager(World(width, height, players, foods))
 
-  private val timer = new Timer()
-  private val task: TimerTask = new TimerTask:
-    override def run(): Unit =
-      AIMovement.moveAI("p1", manager)
-      manager.tick()
-      onEDT(Window.getWindows.foreach(_.repaint()))
-  timer.scheduleAtFixedRate(task, 0, 30) // every 30ms
+  private val system = ActorSystem(ServerActor(worldManager), "agario", ConfigFactory.load("agario.conf"))
+
+//  private val timer = new Timer()
+//  private val task: TimerTask = new TimerTask:
+//    override def run(): Unit =
+//      //AIMovement.moveAI("p1", manager)
+//      worldManager.tick()
+//      onEDT(Window.getWindows.foreach(_.repaint()))
+//  timer.scheduleAtFixedRate(task, 0, 30) // every 30ms
 
   override def top: Frame =
     // Open both views at startup
-    new GlobalView(manager).open()
-    new LocalView(manager, "p1").open()
-    new LocalView(manager, "p2").open()
+    new GlobalView(worldManager).open()
+//    players.foreach(p => new LocalView(worldManager, p.id).open())
+//    new LocalView(manager, "p1").open()
+//    new LocalView(manager, "p2").open()
     // No launcher window, just return an empty frame (or null if allowed)
     new Frame { visible = false }
