@@ -22,9 +22,11 @@ object Main extends SimpleSwingApplication:
   private val numFoods = 100
   private val players = GameInitializer.initialPlayers(numPlayers, width, height)
   private val foods = GameInitializer.initialFoods(numFoods, width, height)
-  private val worldManager = new MockGameStateManager(World(width, height, players, foods))
+  private val worldManager = MockGameStateManager(World(width, height, players, foods))
 
-  private val system = ActorSystem(ServerActor(worldManager), "ClusterSystem", ConfigFactory.load("server.conf"))
+  val view = GlobalView(worldManager)
+
+  private val system = ActorSystem(ServerActor(view), "ClusterSystem", ConfigFactory.load("agario.conf"))
 
 //  private val timer = new Timer()
 //  private val task: TimerTask = new TimerTask:
@@ -36,7 +38,7 @@ object Main extends SimpleSwingApplication:
 
   override def top: Frame =
     // Open both views at startup
-    new GlobalView(worldManager).open()
+    view.open()
 //    players.foreach(p => new LocalView(worldManager, p.id).open())
 //    new LocalView(worldManager, "p1").open()
 //    new LocalView(worldManager, "p2").open()
