@@ -25,14 +25,15 @@ object FoodManager {
           
           context.log.info(s"Added food at (${newFood.x}, ${newFood.y})")
           replyTo ! updatedWorld
-          FoodManager(updatedWorld)
+          //FoodManager(updatedWorld)
+          Behaviors.same
 
         case Message.RemoveFood(world, food, replyTo) =>
           val updatedFoodList = world.foods.filterNot(_ == food)
           val updatedWorld = world.copy(foods = updatedFoodList)
           context.log.info(s"Removed food at (${food.x}, ${food.y})")
           replyTo ! updatedWorld
-          FoodManager(updatedWorld)
+          Behaviors.same
       }
     }
 }
