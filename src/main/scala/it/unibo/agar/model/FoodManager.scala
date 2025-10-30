@@ -10,31 +10,29 @@ import scala.util.Random
 
 object FoodManager {
 
-  def apply(manager: MockGameStateManager): Behavior[FoodManagerCommand] =
+  def apply(world: World): Behavior[FoodManagerCommand] =
     Behaviors.receive { (context, message) =>
       message match {
-        case Message.AddFood(replyTo) =>
+        case Message.AddFood(world, replyTo) =>
           val newFood = Food(
-            "food" + manager.world.foods.size,
+            "food" + world.foods.size,
             (500).toInt,
             (500).toInt,
             500
           )
-          val updatedFoodList = manager.world.foods :+ newFood
-          val updatedWorld = manager.world.copy(foods = updatedFoodList)
+          val updatedFoodList = world.foods :+ newFood
+          val updatedWorld = world.copy(foods = updatedFoodList)
           
           context.log.info(s"Added food at (${newFood.x}, ${newFood.y})")
-          //replyTo ! updatedWorld
-          val newmanager = manager.copy(world = updatedWorld)
-          FoodManager(newmanager)
+          replyTo ! updatedWorld
+          FoodManager(updatedWorld)
 
-        case Message.RemoveFood(food, replyTo) =>
-          val updatedFoodList = manager.world.foods.filterNot(_ == food)
-          val updatedWorld = manager.world.copy(foods = updatedFoodList)
+        case Message.RemoveFood(world, food, replyTo) =>
+          val updatedFoodList = world.foods.filterNot(_ == food)
+          val updatedWorld = world.copy(foods = updatedFoodList)
           context.log.info(s"Removed food at (${food.x}, ${food.y})")
-          //replyTo ! updatedWorld
-          val newmanager = manager.copy(world = updatedWorld)
-          FoodManager(newmanager)
+          replyTo ! updatedWorld
+          FoodManager(updatedWorld)
       }
     }
 }
