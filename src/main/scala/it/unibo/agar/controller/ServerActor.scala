@@ -5,6 +5,7 @@ import akka.actor.typed.scaladsl.*
 import akka.actor.typed.receptionist.{Receptionist, ServiceKey}
 import it.unibo.agar.Message.*
 import it.unibo.agar.model.MockGameStateManager
+import it.unibo.agar.view.GlobalView
 
 import scala.concurrent.duration.*
 
@@ -13,18 +14,18 @@ object ServerActor:
   // La dio di chiave per il receptionist
   val ServerKey: ServiceKey[ServerCommand] = ServiceKey[ServerCommand]("ServerService")
 
-  def apply(manager: MockGameStateManager): Behavior[ServerCommand] =
+  def apply(view: GlobalView): Behavior[ServerCommand] =
     Behaviors.setup { ctx =>
       ctx.system.receptionist ! Receptionist.Register(ServerKey, ctx.self)
       ctx.log.info("Server registrato nel Receptionist")
 
       Behaviors.withTimers { timers =>
-        timers.startTimerAtFixedRate(Tick(manager.getWorld), 3.seconds)
-        running(manager, Set.empty)
+        timers.startTimerAtFixedRate(Tick(view.manager.getWorld), 3.seconds)
+        running(view.manager, Set.empty, view)
       }
     }
 
-  private def running(manager: MockGameStateManager, clients: Set[ActorRef[ClientCommand]]): Behavior[ServerCommand] =
+  private def running(manager: MockGameStateManager, clients: Set[ActorRef[ClientCommand]], view: GlobalView): Behavior[ServerCommand] =
     Behaviors.receive { (ctx, msg) =>
       msg match
         case RegisterClient(client) =>
@@ -32,12 +33,16 @@ object ServerActor:
           val newClients = clients + client
           //todo modifica il mondo aggiungendo il player
           newClients.foreach(_ ! UpdateClient(manager.getWorld))
-          running(manager, newClients)
+          running(manager, newClients, view)
 
 
         case tick: Tick =>
           clients.foreach(_ ! UpdateClient(tick.world))
           ctx.log.info(s"Inviato update a ${clients.size} client")
+          manager.world = manager.world.copy(foods = Seq.empty)
+          val man = manager.copy(manager.world)
+          view.manager = man
+          view.repaint()
           Behaviors.same
 
         case updateDirection: UpdatePlayerDirection =>

@@ -10,7 +10,7 @@ import scala.util.Random
 
 object FoodManager {
 
-  def apply(world: World): Behavior[FoodManagerCommand] =
+  def apply(): Behavior[FoodManagerCommand] =
     Behaviors.receive { (context, message) =>
       message match {
         case Message.AddFood(world, replyTo) =>

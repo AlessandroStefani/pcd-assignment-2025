@@ -6,7 +6,7 @@ import java.awt.Color
 import java.awt.Graphics2D
 import scala.swing.*
 
-class GlobalView(manager: MockGameStateManager) extends MainFrame:
+class GlobalView(var manager: MockGameStateManager) extends MainFrame:
 
   title = "Agar.io - Global View"
   preferredSize = new Dimension(800, 800)
