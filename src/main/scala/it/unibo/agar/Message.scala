@@ -11,7 +11,7 @@ object Message:
   trait ServerCommand extends Message
   final case class RegisterClient(client: ActorRef[ClientCommand]) extends ServerCommand
   final case class UpdatePlayerDirection(id: String, dx: Double, dy: Double) extends ServerCommand
-  final case class Tick(world: World) extends ServerCommand
+  final case class Tick() extends ServerCommand
   final case class WorldUpdated(world: World) extends ServerCommand
   final case class DisconnectClient() extends Message
   final case class ServerAddFood(food: Food) extends ServerCommand

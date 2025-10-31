@@ -22,7 +22,7 @@ object ServerActor:
       val fm = ctx.spawn(FoodManager(), "foodManager")
 
       Behaviors.withTimers { timers =>
-        timers.startTimerAtFixedRate(Tick(view.manager.getWorld), 3.seconds)
+        timers.startTimerAtFixedRate(Tick(), 3.seconds)
         running(view.manager, Set.empty, view, fm)
       }
     }
@@ -44,8 +44,8 @@ object ServerActor:
           running(manager, newClients, view, foodManager)
 
 
-        case tick: Tick =>
-          clients.foreach(_ ! UpdateClient(tick.world))
+        case Tick() =>
+          clients.foreach(_ ! UpdateClient(manager.world))
           foodManager ! AddFood(ctx.self)
           ctx.log.info(s"Inviato update a ${clients.size} client")
           view.repaint()
