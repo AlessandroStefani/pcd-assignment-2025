@@ -2,7 +2,7 @@ package it.unibo.agar.controller
 
 import akka.actor.typed.Behavior
 import akka.actor.typed.scaladsl.*
-import it.unibo.agar.Message.{ClientCommand, RegisterClient, UpdateClient}
+import it.unibo.agar.Message.{ClientCommand, RegisterClient, ThisIsYourId, UpdateClient}
 import akka.actor.typed.receptionist.{Receptionist, ServiceKey}
 import ServerActor.ServerKey
 
@@ -20,6 +20,10 @@ object ClientActor:
             ctx.log.info(s"Trovato server $serverRef — invio RegisterClient")
             serverRef ! RegisterClient(ctx.self.narrow[ClientCommand])
           }
+          Behaviors.same
+
+        case id: ThisIsYourId =>
+          ctx.log.info(s"Ricevuto id $id")
           Behaviors.same
 
         case world: UpdateClient =>

@@ -26,7 +26,7 @@ object Main extends SimpleSwingApplication:
 
   val view = GlobalView(worldManager)
 
-  private val system = ActorSystem(ServerActor(view), "ClusterSystem", ConfigFactory.load("agario.conf"))
+  private val system = ActorSystem(ServerActor(view), "ClusterSystem", ConfigFactory.load("server.conf"))
 
 //  private val timer = new Timer()
 //  private val task: TimerTask = new TimerTask:

@@ -32,6 +32,10 @@ object ServerActor:
           ctx.log.info(s"Client registrato: $client")
           val newClients = clients + client
           //todo modifica il mondo aggiungendo il player
+          manager.world = manager.world.addPlayer(clients.size.toString)
+          view.manager = manager.copy(manager.world)
+          client ! ThisIsYourId(clients.size.toString)
+
           newClients.foreach(_ ! UpdateClient(manager.getWorld))
           running(manager, newClients, view)
 

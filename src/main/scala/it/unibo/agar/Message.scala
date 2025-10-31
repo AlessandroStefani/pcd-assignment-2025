@@ -13,10 +13,12 @@ object Message:
   final case class UpdatePlayerDirection(id: String, dx: Double, dy: Double) extends ServerCommand
   final case class Tick(world: World) extends ServerCommand
   final case class WorldUpdated(world: World) extends ServerCommand
+  final case class DisconnectClient() extends Message
 
   // Messaggini verso il client
   trait ClientCommand extends Message
   final case class UpdateClient(world: World) extends ClientCommand
+  case class ThisIsYourId(id: String) extends ClientCommand
   
   trait FoodManagerCommand extends Message
   final case class AddFood(world: World, replyTo: ActorRef[World]) extends FoodManagerCommand
