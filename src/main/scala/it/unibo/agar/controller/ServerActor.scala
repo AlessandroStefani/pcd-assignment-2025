@@ -36,15 +36,14 @@ object ServerActor:
         case RegisterClient(client) =>
           ctx.log.info(s"Client registrato: $client")
           val newClients = clients + client
-          //todo modifica il mondo aggiungendo il player
           manager.world = manager.world.addPlayer(clients.size.toString)
           view.manager = manager.copy(manager.world)
-          client ! ThisIsYourId(clients.size.toString)
+          client ! Init(clients.size.toString, manager.world)
           newClients.foreach(_ ! UpdateClient(manager.getWorld))
           running(manager, newClients, view, foodManager)
 
-
         case Tick() =>
+          manager.tick()
           clients.foreach(_ ! UpdateClient(manager.world))
           foodManager ! AddFood(ctx.self)
           ctx.log.info(s"Inviato update a ${clients.size} client")
@@ -62,9 +61,6 @@ object ServerActor:
           view.manager = man
           view.repaint()
           Behaviors.same
-
-
-
     }
 
 

@@ -20,7 +20,7 @@ object Message:
   // Messaggini verso il client
   trait ClientCommand extends Message
   final case class UpdateClient(world: World) extends ClientCommand
-  case class ThisIsYourId(id: String) extends ClientCommand
+  case class Init(id: String, world: World) extends ClientCommand
   
   trait FoodManagerCommand extends Message
   final case class AddFood(replyTo: ActorRef[ServerCommand]) extends FoodManagerCommand
