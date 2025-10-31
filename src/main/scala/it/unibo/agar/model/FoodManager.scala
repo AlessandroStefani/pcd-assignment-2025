@@ -3,7 +3,7 @@ package it.unibo.agar.model
 import akka.actor.typed.Behavior
 import akka.actor.typed.scaladsl.Behaviors
 import it.unibo.agar.Message
-import it.unibo.agar.Message.FoodManagerCommand
+import it.unibo.agar.Message.{FoodManagerCommand, ServerAddFood}
 import it.unibo.agar.model.{Food, World}
 
 import scala.util.Random
@@ -13,18 +13,18 @@ object FoodManager {
   def apply(): Behavior[FoodManagerCommand] =
     Behaviors.receive { (context, message) =>
       message match {
-        case Message.AddFood(world, replyTo) =>
+        case Message.AddFood(replyTo) =>
           val newFood = Food(
-            "food" + world.foods.size,
-            (500).toInt,
-            (500).toInt,
+            "food",
+            500,
+            500,
             500
           )
-          val updatedFoodList = world.foods :+ newFood
-          val updatedWorld = world.copy(foods = updatedFoodList)
+          //val updatedFoodList = world.foods :+ newFood
+          //val updatedWorld = world.copy(foods = updatedFoodList)
           
           context.log.info(s"Added food at (${newFood.x}, ${newFood.y})")
-          replyTo ! updatedWorld
+          replyTo ! ServerAddFood(newFood)
           //FoodManager(updatedWorld)
           Behaviors.same
 

@@ -14,6 +14,8 @@ object Message:
   final case class Tick(world: World) extends ServerCommand
   final case class WorldUpdated(world: World) extends ServerCommand
   final case class DisconnectClient() extends Message
+  final case class ServerAddFood(food: Food) extends ServerCommand
+
 
   // Messaggini verso il client
   trait ClientCommand extends Message
@@ -21,5 +23,8 @@ object Message:
   case class ThisIsYourId(id: String) extends ClientCommand
   
   trait FoodManagerCommand extends Message
-  final case class AddFood(world: World, replyTo: ActorRef[World]) extends FoodManagerCommand
+  final case class AddFood(replyTo: ActorRef[ServerCommand]) extends FoodManagerCommand
   final case class RemoveFood(world: World, food: Food, replyTo: ActorRef[World]) extends FoodManagerCommand
+
+  enum Mess extends Message:
+    case Boh
