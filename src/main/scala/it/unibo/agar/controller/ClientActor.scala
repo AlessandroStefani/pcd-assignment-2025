@@ -1,8 +1,8 @@
 package it.unibo.agar.controller
 
-import akka.actor.typed.{ActorRef, Behavior}
+import akka.actor.typed.{ActorRef, Behavior, PostStop}
 import akka.actor.typed.scaladsl.*
-import it.unibo.agar.Message.{ClientCommand, RegisterClient, ServerCommand, Init, UpdateClient}
+import it.unibo.agar.Message.{ClientCommand, DisconnectClient, Init, RegisterClient, ServerCommand, UpdateClient}
 import akka.actor.typed.receptionist.{Receptionist, ServiceKey}
 import ServerActor.ServerKey
 import it.unibo.agar.view.LocalView
@@ -16,7 +16,7 @@ object ClientActor:
       ctx.system.receptionist ! Receptionist.Subscribe(ServerKey, adapter)
 
       ctx.log.info("Client avviato e in attesa del server...")
-      Behaviors.receiveMessage {
+      Behaviors.receiveMessage[ClientCommand | Receptionist.Listing] {
         case listing: Receptionist.Listing =>
           servers = listing.serviceInstances(ServerKey)
           servers.foreach { serverRef =>
@@ -38,8 +38,13 @@ object ClientActor:
           view.manager.world = world.world
           view.repaint()
           Behaviors.same
+
         case _ =>
           ctx.log.info("Unknown message type received")
+          Behaviors.same
+      }.receiveSignal{
+        case (ctx, PostStop) =>
+          servers.foreach(_ ! DisconnectClient(view.playerId))
           Behaviors.same
       }
     }

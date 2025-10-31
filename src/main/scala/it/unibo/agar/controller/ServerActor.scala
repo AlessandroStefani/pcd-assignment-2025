@@ -22,7 +22,7 @@ object ServerActor:
       val fm = ctx.spawn(FoodManager(), "foodManager")
 
       Behaviors.withTimers { timers =>
-        timers.startTimerAtFixedRate(Tick(), 3.seconds)
+        timers.startTimerAtFixedRate(Tick(), 1.seconds)
         running(view.manager, Set.empty, view, fm)
       }
     }
@@ -41,6 +41,12 @@ object ServerActor:
           client ! Init(clients.size.toString, manager.world)
           newClients.foreach(_ ! UpdateClient(manager.getWorld))
           running(manager, newClients, view, foodManager)
+
+        case DisconnectClient(id) =>
+          val player = manager.world.playerById(id).get
+          manager.world = manager.world.removePlayers(Seq(player))
+          view.repaint()
+          Behaviors.same
 
         case Tick() =>
           manager.tick()
