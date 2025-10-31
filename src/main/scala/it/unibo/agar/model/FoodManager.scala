@@ -16,9 +16,9 @@ object FoodManager {
         case Message.AddFood(replyTo) =>
           val newFood = Food(
             "food",
-            500,
-            500,
-            500
+            Random.between(250, 750),
+            Random.between(250, 750),
+            100
           )
           //val updatedFoodList = world.foods :+ newFood
           //val updatedWorld = world.copy(foods = updatedFoodList)

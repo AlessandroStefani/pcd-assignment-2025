@@ -7,6 +7,9 @@ import akka.actor.typed.receptionist.{Receptionist, ServiceKey}
 import ServerActor.ServerKey
 
 object ClientActor:
+
+  var world : Option[it.unibo.agar.model.World] = Option.empty
+  
   def apply(): Behavior[ClientCommand | Receptionist.Listing] =
     Behaviors.setup { ctx =>      
       val adapter = ctx.messageAdapter[Receptionist.Listing](listing => listing)
@@ -28,6 +31,8 @@ object ClientActor:
 
         case world: UpdateClient =>
           ctx.log.info(s"Ricevuto stato del mondo")
+          this.world = Option(world.world)
+          println(world.world.players)
           Behaviors.same
         case _ =>
           ctx.log.info("Unknown message type received")
