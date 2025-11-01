@@ -4,7 +4,7 @@ import akka.actor.typed.*
 import akka.actor.typed.scaladsl.*
 import akka.actor.typed.receptionist.{Receptionist, ServiceKey}
 import it.unibo.agar.Message.*
-import it.unibo.agar.model.{FoodManager, MockGameStateManager}
+import it.unibo.agar.model.{FoodManager, ServerGameStateManager}
 import it.unibo.agar.view.GlobalView
 
 import scala.concurrent.duration.*
@@ -14,7 +14,7 @@ object ServerActor:
   // La dio di chiave per il receptionist
   val ServerKey: ServiceKey[ServerCommand] = ServiceKey[ServerCommand]("ServerService")
 
-  def apply(view: GlobalView): Behavior[ServerCommand] =
+  def apply(manager: ServerGameStateManager, view: GlobalView): Behavior[ServerCommand] =
     Behaviors.setup { ctx =>
       ctx.system.receptionist ! Receptionist.Register(ServerKey, ctx.self)
       ctx.log.info("Server registrato nel Receptionist")
@@ -24,10 +24,11 @@ object ServerActor:
       Behaviors.withTimers { timers =>
         timers.startTimerAtFixedRate(Tick(), 1.seconds)
         running(view.manager, Set.empty, view, fm)
+        running(manager, Set.empty, view, fm)
       }
     }
 
-  private def running(manager: MockGameStateManager,
+  private def running(manager: ServerGameStateManager,
                       clients: Set[ActorRef[ClientCommand]],
                       view: GlobalView,
                       foodManager: ActorRef[FoodManagerCommand]): Behavior[ServerCommand] =

@@ -1,13 +1,13 @@
 package it.unibo.agar.view
 
 import it.unibo.agar.Message.UpdatePlayerDirection
-import it.unibo.agar.model.MockGameStateManager
+import it.unibo.agar.model.GameStateManager
 import it.unibo.agar.controller.ClientActor.servers
 
 import java.awt.Graphics2D
 import scala.swing.*
 
-class LocalView(var manager: MockGameStateManager, var playerId: String) extends MainFrame:
+class LocalView(var manager: GameStateManager, var playerId: String) extends MainFrame:
   
   preferredSize = new Dimension(400, 400)
 
@@ -30,7 +30,6 @@ class LocalView(var manager: MockGameStateManager, var playerId: String) extends
       playerOpt.foreach: player =>
         val dx = (mousePos.x - size.width / 2) * 0.01
         val dy = (mousePos.y - size.height / 2) * 0.01
-        manager.movePlayerDirection(playerId, dx, dy)
         servers.foreach(server => {
           server ! UpdatePlayerDirection(playerId, dx, dy)
         })

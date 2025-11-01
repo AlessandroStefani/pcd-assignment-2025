@@ -3,7 +3,7 @@ package it.unibo.agar.controller
 import akka.actor.typed.ActorSystem
 import com.typesafe.config.ConfigFactory
 import it.unibo.agar.model.GameInitializer
-import it.unibo.agar.model.MockGameStateManager
+import it.unibo.agar.model.ServerGameStateManager
 import it.unibo.agar.model.World
 import it.unibo.agar.view.GlobalView
 import it.unibo.agar.view.LocalView
@@ -22,11 +22,11 @@ object Main extends SimpleSwingApplication:
   private val numFoods = 100
   private val players = GameInitializer.initialPlayers(numPlayers, width, height)
   private val foods = GameInitializer.initialFoods(numFoods, width, height)
-  private val worldManager = MockGameStateManager(World(width, height, players, foods))
+  private val worldManager = ServerGameStateManager(World(width, height, players, foods), massForWin = 4000)
 
   val view = GlobalView(worldManager)
 
-  private val system = ActorSystem(ServerActor(view), "ClusterSystem", ConfigFactory.load("server.conf"))
+  private val system = ActorSystem(ServerActor(worldManager, view), "ClusterSystem", ConfigFactory.load("server.conf"))
 
 //  private val timer = new Timer()
 //  private val task: TimerTask = new TimerTask:

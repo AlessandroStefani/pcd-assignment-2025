@@ -2,15 +2,16 @@ package it.unibo.agar.controller
 
 import akka.actor.typed.{ActorRef, Behavior, PostStop}
 import akka.actor.typed.scaladsl.*
-import it.unibo.agar.Message.{ClientCommand, DisconnectClient, Init, RegisterClient, ServerCommand, UpdateClient}
+import it.unibo.agar.Message.{ClientCommand, DisconnectClient, EndGame, Init, RegisterClient, ServerCommand, UpdateClient}
 import akka.actor.typed.receptionist.{Receptionist, ServiceKey}
 import ServerActor.ServerKey
+import it.unibo.agar.model.ClientGameStateManager
 import it.unibo.agar.view.LocalView
 
 object ClientActor:
   var servers: Set[ActorRef[ServerCommand]] = Set.empty
   
-  def apply(view: LocalView): Behavior[ClientCommand | Receptionist.Listing] = {
+  def apply(manager: ClientGameStateManager, view: LocalView): Behavior[ClientCommand | Receptionist.Listing] = {
     Behaviors.setup { ctx =>
       val adapter = ctx.messageAdapter[Receptionist.Listing](listing => listing)
       ctx.system.receptionist ! Receptionist.Subscribe(ServerKey, adapter)
@@ -28,14 +29,14 @@ object ClientActor:
         case Init(id, w) =>
           ctx.log.info(s"Ricevuto id $id")
           view.playerId = id
-          view.manager.world = w
+          manager.world = w
           view.title = s"Agar.io - Local View ($id)"
           view.open()
           Behaviors.same
 
         case world: UpdateClient =>
           ctx.log.info(s"Ricevuto stato del mondo ${world.world.players}")
-          view.manager.world = world.world
+          manager.world = world.world
           view.repaint()
           Behaviors.same
 

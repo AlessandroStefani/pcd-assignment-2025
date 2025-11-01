@@ -1,13 +1,18 @@
 package it.unibo.agar.model
 
 trait GameStateManager:
-
   def getWorld: World
   def movePlayerDirection(id: String, dx: Double, dy: Double): Unit
 
-case class MockGameStateManager(
+case class ClientGameStateManager(var world: World = World(0, 0, Seq.empty, Seq.empty)) extends GameStateManager:
+  
+  override def getWorld: World = world
+  override def movePlayerDirection(id: String, dx: Double, dy: Double): Unit = ???
+
+case class ServerGameStateManager(
     var world: World,
-    val speed: Double = 10.0
+    val massForWin: Double,
+    val speed: Double = 10.0,
 ) extends GameStateManager:
 
   private var directions: Map[String, (Double, Double)] = Map.empty
@@ -28,6 +33,9 @@ case class MockGameStateManager(
             world = updateWorldAfterMovement(updatePlayerPosition(player, dx, dy))
           case None =>
           // Player not found, ignore movement
+
+  def winningPlayer: Option[Player] =
+    world.players.find(_.mass >= massForWin)
 
   private def updatePlayerPosition(player: Player, dx: Double, dy: Double): Player =
     val newX = (player.x + dx * speed).max(0).min(world.width)

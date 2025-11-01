@@ -1,7 +1,7 @@
 package it.unibo.agar
 
 import akka.actor.typed.ActorRef
-import it.unibo.agar.model.{Food, MockGameStateManager, World}
+import it.unibo.agar.model.{Food, World}
 
 object Message:
   /** Tag interface for all messages sends by actors */
