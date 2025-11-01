@@ -11,8 +11,8 @@ case class ClientGameStateManager(var world: World = World(0, 0, Seq.empty, Seq.
 
 case class ServerGameStateManager(
     var world: World,
-    val massForWin: Double,
-    val speed: Double = 10.0,
+    massForWin: Double,
+    speed: Double = 10.0,
 ) extends GameStateManager:
 
   private var directions: Map[String, (Double, Double)] = Map.empty

@@ -22,8 +22,8 @@ object ServerActor:
       val fm = ctx.spawn(FoodManager(), "foodManager")
 
       Behaviors.withTimers { timers =>
-        timers.startTimerAtFixedRate(Tick(), 1.seconds)
-        running(view.manager, Set.empty, view, fm)
+        timers.startTimerAtFixedRate(Tick(), 100.millis)
+        timers.startTimerAtFixedRate(GenerateFood(), 1.seconds)
         running(manager, Set.empty, view, fm)
       }
     }
@@ -51,9 +51,19 @@ object ServerActor:
 
         case Tick() =>
           manager.tick()
-          clients.foreach(_ ! UpdateClient(manager.world))
+          val winner = manager.winningPlayer
+          if winner.isDefined then
+            ctx.log.info(s"Il giocatore ${winner.get.id} ha raggiunto la massa per vincere")
+            clients.foreach(_ ! EndGame(winner.get.id))
+            System.exit(0)
+          else
+            clients.foreach(_ ! UpdateClient(manager.world))
+            ctx.log.info(s"Inviato update a ${clients.size} client")
+            view.repaint()
+          Behaviors.same
+
+        case GenerateFood() =>
           foodManager ! AddFood(ctx.self)
-          ctx.log.info(s"Inviato update a ${clients.size} client")
           view.repaint()
           Behaviors.same
 

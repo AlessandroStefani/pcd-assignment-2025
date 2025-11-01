@@ -40,6 +40,11 @@ object ClientActor:
           view.repaint()
           Behaviors.same
 
+        case EndGame(winnerId) =>
+          ctx.log.info(s"La partita e' finita, il giocatore $winnerId ha raggiunto la massa per vincere")
+          System.exit(0)
+          Behaviors.same
+
         case _ =>
           ctx.log.info("Unknown message type received")
           Behaviors.same
