@@ -44,7 +44,7 @@ object ClientActor:
           Behaviors.same
       }.receiveSignal{
         case (ctx, PostStop) =>
-          servers.foreach(_ ! DisconnectClient(view.playerId))
+          servers.foreach(_ ! DisconnectClient(ctx.self.narrow[ClientCommand], view.playerId))
           Behaviors.same
       }
     }

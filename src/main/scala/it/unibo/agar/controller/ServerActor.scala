@@ -42,11 +42,11 @@ object ServerActor:
           newClients.foreach(_ ! UpdateClient(manager.getWorld))
           running(manager, newClients, view, foodManager)
 
-        case DisconnectClient(id) =>
+        case DisconnectClient(client, id) =>
           val player = manager.world.playerById(id).get
           manager.world = manager.world.removePlayers(Seq(player))
           view.repaint()
-          Behaviors.same
+          running(manager, clients.filterNot(_ == client), view, foodManager)
 
         case Tick() =>
           manager.tick()
@@ -57,7 +57,6 @@ object ServerActor:
           Behaviors.same
 
         case updateDirection: UpdatePlayerDirection =>
-          ctx.log.info(s"Inviato messaggio a ${clients.size} client")
           manager.movePlayerDirection(updateDirection.id, updateDirection.dx, updateDirection.dy)
           Behaviors.same
 

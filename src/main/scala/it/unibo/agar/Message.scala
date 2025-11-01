@@ -13,7 +13,7 @@ object Message:
   final case class UpdatePlayerDirection(id: String, dx: Double, dy: Double) extends ServerCommand
   final case class Tick() extends ServerCommand
   final case class WorldUpdated(world: World) extends ServerCommand
-  final case class DisconnectClient(id: String) extends ServerCommand
+  final case class DisconnectClient(client: ActorRef[ClientCommand], id: String) extends ServerCommand
   final case class ServerAddFood(food: Food) extends ServerCommand
 
 
