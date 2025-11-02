@@ -56,13 +56,11 @@ object ServerActor:
             ctx.log.info(s"Il giocatore ${winner.get.id} ha raggiunto la massa per vincere")
             clients.foreach(_ ! EndGame(winner.get.id))
           clients.foreach(_ ! UpdateClient(manager.world))
-          ctx.log.info(s"Inviato update a ${clients.size} client")
           view.repaint()
           Behaviors.same
 
         case GenerateFood() =>
           foodManager ! AddFood(ctx.self)
-          ctx.log.info(s"Inviato update a ${clients.size} client")
           view.repaint()
           Behaviors.same
 

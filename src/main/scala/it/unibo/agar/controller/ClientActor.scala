@@ -35,7 +35,6 @@ object ClientActor:
           Behaviors.same
 
         case world: UpdateClient =>
-          ctx.log.info(s"Ricevuto stato del mondo ${world.world.players}")
           manager.world = world.world
           view.repaint()
           Behaviors.same
