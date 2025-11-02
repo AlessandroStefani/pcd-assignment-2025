@@ -42,6 +42,7 @@ object ClientActor:
 
         case EndGame(winnerId) =>
           ctx.log.info(s"La partita e' finita, il giocatore $winnerId ha raggiunto la massa per vincere")
+          servers.foreach(_ ! DisconnectClient(ctx.self.narrow[ClientCommand], view.playerId))
           System.exit(0)
           Behaviors.same
 
