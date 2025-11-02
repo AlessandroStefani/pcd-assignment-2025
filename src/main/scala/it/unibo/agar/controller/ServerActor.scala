@@ -22,7 +22,7 @@ object ServerActor:
       val fm = ctx.spawn(FoodManager(), "foodManager")
 
       Behaviors.withTimers { timers =>
-        timers.startTimerAtFixedRate(Tick(), 30.millis)
+        timers.startTimerAtFixedRate(Tick(), 30.milliseconds)
         timers.startTimerAtFixedRate(GenerateFood(), 1.seconds)
         running(manager, Set.empty, view, fm)
       }
@@ -46,11 +46,13 @@ object ServerActor:
         case DisconnectClient(client, id) =>
           val player = manager.world.playerById(id).get
           manager.world = manager.world.removePlayers(Seq(player))
+          view.manager = manager
           view.repaint()
           running(manager, clients.filterNot(_ == client), view, foodManager)
 
         case Tick() =>
           manager.tick()
+          view.manager = manager //todo fa un po puzzo, dovremmo sistemare
           val winner = manager.winningPlayer
           if winner.isDefined then
             ctx.log.info(s"Il giocatore ${winner.get.id} ha raggiunto la massa per vincere")
@@ -61,7 +63,6 @@ object ServerActor:
 
         case GenerateFood() =>
           foodManager ! AddFood(ctx.self)
-          view.repaint()
           Behaviors.same
 
         case updateDirection: UpdatePlayerDirection =>
